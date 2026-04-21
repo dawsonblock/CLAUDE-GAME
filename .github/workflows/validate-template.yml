@@ -1,0 +1,69 @@
+name: Validate Template
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Shell syntax check
+        run: |
+          find . -name "*.sh" \
+            -not -path "./.git/*" \
+            -exec bash -n {} \; -print
+
+      - name: Audit inventory counts and public docs
+        run: |
+          chmod +x tools/audit_repo.sh
+          bash tools/audit_repo.sh
+
+      - name: Check relative markdown links exist
+        run: |
+          FAIL=0
+          while IFS= read -r file; do
+            while IFS= read -r link; do
+              target="$(dirname "$file")/$link"
+              if [ ! -e "$target" ]; then
+                echo "BROKEN LINK: $file -> $link (resolved: $target)"
+                FAIL=1
+              fi
+            done < <(grep -oE '\[([^]]+)\]\(([^)#]+)\)' "$file" \
+                       | sed 's/.*](\([^)]*\))/\1/' \
+                       | grep -v '^http' || true)
+          done < <(find . -name "*.md" -not -path "./.git/*")
+          exit $FAIL
+
+      - name: Check non-coding agents have no code-first boilerplate
+        run: |
+          FAIL=0
+          FILES=(
+            .claude/agents/writer.md
+            .claude/agents/community-manager.md
+            .claude/agents/qa-tester.md
+            .claude/agents/qa-lead.md
+            .claude/agents/accessibility-specialist.md
+            .claude/agents/performance-analyst.md
+            .claude/agents/producer.md
+            .claude/agents/release-manager.md
+            .claude/agents/localization-lead.md
+            .claude/agents/narrative-director.md
+          )
+          BANNED=(
+            "Before writing any code"
+            "static utility class or a scene node"
+            "Show class structure"
+            "Should I write tests now"
+          )
+          for f in "${FILES[@]}"; do
+            for phrase in "${BANNED[@]}"; do
+              if grep -qF "$phrase" "$f" 2>/dev/null; then
+                echo "BANNED PHRASE in $f: $phrase"
+                FAIL=1
+              fi
+            done
+          done
+          exit $FAIL

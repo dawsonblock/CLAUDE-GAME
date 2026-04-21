@@ -4,6 +4,11 @@
 # Purpose: Detect missing documentation when code/prototypes exist
 # Cross-platform: Windows Git Bash compatible (uses grep -E, not -P)
 
+# shellcheck source=../lib/project_state.sh
+HOOK_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+. "$HOOK_DIR/../lib/project_state.sh"
+
 # Exit on error for debugging (but don't fail the session)
 set +e
 
@@ -14,8 +19,8 @@ FRESH_PROJECT=true
 
 # Check if engine is configured
 if [ -f ".claude/docs/technical-preferences.md" ]; then
-  ENGINE_LINE=$(grep -E "^\- \*\*Engine\*\*:" .claude/docs/technical-preferences.md 2>/dev/null)
-  if [ -n "$ENGINE_LINE" ] && ! echo "$ENGINE_LINE" | grep -q "TO BE CONFIGURED" 2>/dev/null; then
+  get_engine "." > /dev/null
+  if [ "$ENGINE_CONFIGURED" = true ]; then
     FRESH_PROJECT=false
   fi
 fi
