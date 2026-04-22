@@ -1,9 +1,9 @@
 # Claude Code Game Studios -- Complete Workflow Guide
 
-> **How to go from zero to a shipped game using the Agent Architecture.**
+> **How to go from zero to a shipped game using the role prompts and skills.**
 >
 > This guide walks you through every phase of game development using the
-> 48-agent system, 68 slash commands, and 12 automated hooks. It assumes you
+> 49 role prompts, 72 skills, and 12 automated hooks. It assumes you
 > have Claude Code installed and are working from the project root.
 >
 > The pipeline has 7 phases. Each phase has a formal gate (`/gate-check`)
@@ -1637,9 +1637,9 @@ conflicts go to `producer`.
 
 ## Tips for Getting the Most Out of the System
 
-1. **Always start with design, then implement.** The agent system is built
+1. **Always start with design, then implement.** The role prompts are built
    around the assumption that a design document exists before code is written.
-   Agents reference GDDs constantly.
+   Role prompts reference GDDs constantly.
 
 2. **Use team skills for cross-cutting features.** Do not try to manually
    coordinate 4 agents yourself -- let `/team-combat`, `/team-narrative`,

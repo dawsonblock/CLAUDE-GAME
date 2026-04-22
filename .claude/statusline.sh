@@ -4,6 +4,11 @@
 #
 # Segments: ctx% | model | production stage [| Epic > Feature > Task]
 
+# shellcheck source=lib/project_state.sh
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/lib/project_state.sh"
+
 input=$(cat)
 
 # --- Parse JSON (jq with grep fallback) ---
@@ -53,10 +58,8 @@ if [ -z "$stage" ]; then
 
   # Check if engine is configured (not placeholder)
   if [ -f "$tech_prefs" ]; then
-    engine_line=$(grep -m1 '^\*\*Engine\*\*:' "$tech_prefs" 2>/dev/null || true)
-    if [ -n "$engine_line" ] && ! echo "$engine_line" | grep -q "TO BE CONFIGURED"; then
-      engine_configured=true
-    fi
+    get_engine "$cwd" > /dev/null
+    [ "$ENGINE_CONFIGURED" = true ] && engine_configured=true
   fi
 
   # Count source files (language-agnostic)

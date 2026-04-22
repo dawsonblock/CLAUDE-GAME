@@ -1,7 +1,8 @@
 # Claude Code Game Studios -- Game Studio Agent Architecture
 
-Indie game development managed through 48 coordinated Claude Code subagents.
-Each agent owns a specific domain, enforcing separation of concerns and quality.
+Claude Code Game Studios is a Claude Code workspace template for structured game development.
+It provides 49 Claude Code role prompts and shared workflow rules that organize design,
+planning, implementation, QA, and release work across a 7-phase pipeline.
 
 ## Technology Stack
 
